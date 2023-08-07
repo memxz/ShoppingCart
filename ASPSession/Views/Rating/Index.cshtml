@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var productId = (int)ViewData["productId"];
+
+}
+
+
+<div class="card text-center">
+    <div class="card-body">
+        <h5 class="card-title">How Much Are You Satisfied with This Product?</h5>
+
+        <div class="wrapper">
+            <input class="form-control me-2" type="submit" id="productId" aria-label="Search" value="@productId" hidden>
+            <input class="star" type="radio" id="5" name="myStarPlatinum">
+            <label for="5">&#10038;</label>
+            <input class="star" type="radio" id="4" name="myStarPlatinum">
+            <label for="4">&#10038;</label>
+            <input class="star" type="radio" id="3" name="myStarPlatinum">
+            <label for="3">&#10038;</label>
+            <input class="star" type="radio" id="2" name="myStarPlatinum">
+            <label for="2">&#10038;</label>
+            <input class="star" type="radio" id="1" name="myStarPlatinum">
+            <label for="1">&#10038;</label>
+        </div>
+
+
+        <img class="d-inline-block rounded mx-auto d-block" src="https://www.powerreviews.com/wp-content/uploads/2022/09/uk-volume-recency.webp" width="800" height="450" />
+    </div>
+</div>
+
+
+@section Scripts
+    {
+    <script>
+
+        $(document).ready(function () {
+            if ('@context.HttpContext!.Session.GetString("Username")' !== '') {
+                $('#galltag a').html("Shop-More");
+                $('#logintag a').remove();
+                $('#logintag').append('<a href=' + '"@Url.Action("Logout", null, new { area = string.Empty, controller = "UserAccess" })" class= "nav-link" > Logout <//a>');
+                $('#navbarNav a').remove();
+                $('#navbarNav').append('<a class="navbar-brand mb-0 h1" >' + 'Greetings, @ViewData["Username"]' + '</a>');
+
+            }
+            else $('#myP').remove();
+        });
+
+
+        $(document).on('click','[name="myStarPlatinum"]',  function () {                      // To acknowledge rating
+            if ('@context.HttpContext!.Session.GetString("Username")' !== '') {
+                
+                setTimeout(function () {
+                    alert("Thank you for your rating!")
+                }, 200);
+            } else {
+                alert("Please log in");
+            }
+            setTimeout(function () {
+                document.location.href = '/OrderHistory/MyPurchases';
+            }, 800);
+           
+        });
+
+        window.onload = function () {
+
+    const CustomerId = @context.HttpContext.Session.GetString("customerID");
+
+    var ProductId = document.getElementById("productId").value;
+
+    function ChangeStyle() {
+        ProductId = document.getElementById("productId").value;
+    }
+
+
+    RestoreStarsDB();
+    ListenStars();
+
+
+    function ListenStars() {
+        let star = document.getElementsByClassName("star");
+        for (let i = 0; i < star.length; i++) {
+            star[i].addEventListener('click', onClickStars);
+        }
+    }
+
+    function RestoreStarsDB() {
+        RetrieveStarsDB();
+    }
+
+    function RetrieveStarsDB() {
+        let ajax = new XMLHttpRequest();
+        ajax.open("GET", "/Rating/GetStar?pid=" + ProductId);
+
+        ajax.onreadystatechange = function () {
+            if (this.readyState == XMLHttpRequest.DONE) {
+                if (this.status == 200) {
+                    onRetrieveStars(JSON.parse(this.responseText));
+                }
+            }
+        }
+        ajax.send();
+    }
+
+    function onRetrieveStars(data) {
+        if (data == null) {
+            return;
+        }
+
+        let starR = document.getElementById(data.Rating);
+        if (starR != null) {
+            starR.checked = true;
+        }
+    }
+
+    function onClickStars(event) {
+        console.log(ProductId);
+        SetRatingStars(CustomerId, ProductId, event.target.id);
+
+    }
+
+    function SetRatingStars(UserId, ProductId, Rating) {
+        let ajax = new XMLHttpRequest();
+
+        ajax.open("POST", "/Rating/SetStarRating");
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        ajax.onreadystatechange = function () {
+            if (this.readyState == XMLHttpRequest.DONE) {
+                if (this.status == 200) {
+                    return this.responseText;
+                }
+            }
+        }
+
+        // Send the value pair to RatingController
+        ajax.send("UserId=" + UserId + "&ProductId=" + ProductId + "&Rating=" + Rating);
+    }
+}
+
+
+
+
+
+      
+
+
+    </script>
+}
+

@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Controllers",
+    "\\DAO",
+    "\\Models",
+    "\\Models\\ViewModels",
+    "\\Security",
+    "\\Views",
+    "\\Views\\Cart",
+    "\\wwwroot"
+  ],
+  "SelectedNode": "\\Controllers\\RatingController.cs",
+  "PreviewInSolutionExplorer": false
+}
